@@ -32,3 +32,18 @@ TEST(WhiteSpace, LexerTests)
   EXPECT_EQ(lexer.at(4)->value(), "{");
   EXPECT_EQ(lexer.at(5)->value(), "}");
 }
+
+TEST(StringTokening, LexerTests)
+{
+  Lexer lexer{R"END("abcd efg hi jk \"lm nop" main)END"};
+  EXPECT_TRUE(lexer.tokenize());
+  EXPECT_EQ(lexer.at(0)->value(), R"END(abcd efg hi jk \"lm nop)END");
+  EXPECT_EQ(lexer.at(1)->value(), "main");
+}
+
+TEST(NumberTokening, LexerTests)
+{
+  Lexer lexer{"1234.56"};
+  EXPECT_TRUE(lexer.tokenize());
+  EXPECT_EQ(lexer.at(0)->value(), "1234.56");
+}

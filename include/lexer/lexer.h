@@ -19,6 +19,10 @@ public:
 private:
   bool skip_white();
   std::string token();
+  char next_char();
+  void push_last_char();
+  std::string get_string();
+  std::string get_number(std::string ft);
   std::string src_;
   size_t line_{0};
   size_t column_{0};
