@@ -32,6 +32,14 @@ bool Driver::run(std::ostream& out)
   {
     return true;
   }
+
+  std::unique_ptr<IRNode> ir{parser->get_ir()};
+  if (ir == nullptr)
+  {
+    return false;
+  }
+  ir->pretty_print(out, "");
+
   return true;
 }
 
