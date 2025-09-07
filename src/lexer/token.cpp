@@ -116,6 +116,14 @@ Keyword::Keyword(size_t line, size_t col, std::string value) :
   Token{line, col, value}
 {
   type_ = Type::keyword;
+  if (value == "int")
+  {
+    type_ = Type::intt;
+  }
+  else if (value == "void")
+  {
+    type_ = Type::voidt;
+  }
 }
 
 String::String(size_t line, size_t col, std::string value) :

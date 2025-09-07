@@ -33,6 +33,7 @@ private:
   bool expect_open_brace(Token* token);
   bool expect_close_brace(Token* token);
   bool expect_semicolon(Token* token);
+  bool expect_type(Token* token);
 };
 
 } // namespace

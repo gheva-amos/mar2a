@@ -21,6 +21,8 @@ public:
     number,
     identifier,
     keyword,
+    intt,
+    voidt,
     string,
     unknown
   };

@@ -4,6 +4,7 @@
 #include "ast/ast_identifier.h"
 #include "ast/ast_return.h"
 #include "ast/ast_expression.h"
+#include "ast/ast_type.h"
 #include "lexer/token.h"
 
 namespace mar2a
@@ -52,10 +53,11 @@ bool Parser::parse_function(size_t index)
   nodes_.back()->add_child(std::move(func));
   nodes_.push_back(fp);
   Token* token{lexer_->at(index)};
-  if (!expect(token, Token::Type::keyword, "a keyword"))
+  if (!expect_type(token))
   {
     return false;
   }
+  nodes_.back()->add_child(std::make_unique<ASTType>(token->value()));
   index += 1;
   token = lexer_->at(index);
   if (!expect(token, Token::Type::identifier, "a function name (identifier)"))
@@ -71,7 +73,7 @@ bool Parser::parse_function(size_t index)
   }
   index += 1;
   token = lexer_->at(index);
-  if (!expect(token, Token::Type::keyword, "a type"))
+  if (!expect_type(token))
   {
     return false;
   }
@@ -173,6 +175,11 @@ bool Parser::expect_close_brace(Token* token)
 bool Parser::expect_semicolon(Token* token)
 {
   return expect(token, Token::Type::semicolon, "semicolon");
+}
+
+bool Parser::expect_type(Token* token)
+{
+  return expect(token, {Token::Type::voidt, Token::Type::intt}, "a type");
 }
 
 bool Parser::expect(Token* token, std::vector<Token::Type> types, const std::string& msg)
