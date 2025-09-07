@@ -5,4 +5,5 @@ target_compile_options(driver PRIVATE -Wall -Wextra -pedantic -Wno-enum-compare 
 target_link_libraries(driver PUBLIC
     lexer
     parser
+    ir
     )

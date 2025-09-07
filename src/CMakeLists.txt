@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 add_subdirectory(lexer)
 add_subdirectory(ast)
+add_subdirectory(ir)
 add_subdirectory(parser)
 add_subdirectory(driver)
 add_executable(mar2a mar2a.cpp)
