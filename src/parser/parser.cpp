@@ -136,7 +136,6 @@ bool Parser::parse_return(size_t index)
   {
     return false;
   }
-  out_ << token->value() << std::endl;
   nodes_.back()->add_child(std::make_unique<ASTExpression>(token->value()));
 
   index += 1;
