@@ -27,6 +27,11 @@ void Parser::pretty_print()
   ast_->pretty_print(out_, "");
 }
 
+std::unique_ptr<IRNode> Parser::get_ir()
+{
+  return ast_->visit();
+}
+
 bool Parser::parse_program(size_t index)
 {
   if (parse_function(index))
@@ -57,7 +62,7 @@ bool Parser::parse_function(size_t index)
   {
     return false;
   }
-  nodes_.back()->add_child(std::make_unique<ASTType>(token->value()));
+  nodes_.back()->add_child(std::make_unique<ASTType>(token->value(), token->type()));
   index += 1;
   token = lexer_->at(index);
   if (!expect(token, Token::Type::identifier, "a function name (identifier)"))
@@ -138,7 +143,7 @@ bool Parser::parse_return(size_t index)
   {
     return false;
   }
-  nodes_.back()->add_child(std::make_unique<ASTExpression>(token->value()));
+  nodes_.back()->add_child(std::make_unique<ASTExpression>(token->value(), ASTExpression::Type::const_int));
 
   index += 1;
   token = lexer_->at(index);

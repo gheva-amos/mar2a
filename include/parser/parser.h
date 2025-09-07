@@ -3,8 +3,10 @@
 
 #include <ostream>
 #include <vector>
+#include <memory>
 #include "ast/ast_node.h"
 #include "lexer/lexer.h"
+#include "ir/ir_node.h"
 
 namespace mar2a
 {
@@ -15,6 +17,7 @@ public:
   Parser(std::unique_ptr<Lexer> lexer, std::ostream& out);
   bool parse();
   void pretty_print();
+  std::unique_ptr<IRNode> get_ir();
 private:
   bool expect(Token* token, Token::Type type, const std::string& msg);
   bool expect(Token* token, std::vector<Token::Type> types, const std::string& msg);

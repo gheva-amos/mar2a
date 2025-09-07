@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <ostream>
+#include "ir/ir_node.h"
 
 namespace mar2a
 {
@@ -14,6 +15,7 @@ public:
   virtual ~ASTNode() = default;
   virtual void add_child(std::unique_ptr<ASTNode> child) = 0;
   virtual void pretty_print(std::ostream& out, const std::string& indent) const = 0;
+  virtual std::unique_ptr<IRNode> visit() { return nullptr; }
 };
 
 } // namespace

@@ -17,4 +17,9 @@ void ASTIdentifier::pretty_print(std::ostream& out, const std::string& indent) c
   out << indent << id_ << std::endl;
 }
 
+const std::string& ASTIdentifier::id() const
+{
+  return id_;
+}
+
 } // namespace

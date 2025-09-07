@@ -10,11 +10,17 @@ namespace mar2a
 class ASTExpression : public ASTNode
 {
 public:
-  ASTExpression(const std::string exp);
+  enum class Type
+  {
+    const_int
+  };
+  ASTExpression(const std::string exp, Type type);
   virtual void add_child(std::unique_ptr<ASTNode> child) override;
   virtual void pretty_print(std::ostream& out, const std::string& indent) const override;
+  virtual std::unique_ptr<IRNode> visit() override;
 private:
   const std::string exp_;
+  Type type_;
 };
 
 } // namespace

@@ -13,6 +13,7 @@ public:
   ASTIdentifier(const std::string id);
   virtual void add_child(std::unique_ptr<ASTNode> child) override;
   virtual void pretty_print(std::ostream& out, const std::string& indent) const override;
+  const std::string& id() const;
 private:
   const std::string id_;
 };

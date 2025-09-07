@@ -1,4 +1,5 @@
 #include "ast/ast_program.h"
+#include "ir/ir_module.h"
 
 namespace mar2a
 {
@@ -16,6 +17,16 @@ void ASTProgram::pretty_print(std::ostream& out, const std::string& indent) cons
     child->pretty_print(out, indent + "\t");
   }
   out << indent << ")" << std::endl;
+}
+
+std::unique_ptr<IRNode> ASTProgram::visit()
+{
+  std::unique_ptr<IRModule> ret{std::make_unique<IRModule>("Program")};
+  for (const auto& child : children_)
+  {
+    ret->add_child(child->visit());
+  }
+  return ret;
 }
 
 } // namespace
