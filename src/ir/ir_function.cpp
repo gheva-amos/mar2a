@@ -28,4 +28,17 @@ void IRFunction::pretty_print(std::ostream& out, const std::string& indent) cons
   }
 }
 
+#ifdef MAR2A_USE_LLVM
+
+void IRFunction::visit(LLVMVisitor* visitor)
+{
+  ret_type_->visit(visitor);
+  visitor->create_function(name());
+  for (const auto& st : statements_)
+  {
+    st->visit(visitor);
+  }
+}
+
+#endif
 } // namespace

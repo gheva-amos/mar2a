@@ -5,6 +5,10 @@
 #include <string>
 #include <ostream>
 
+#ifdef MAR2A_USE_LLVM
+#include "llvm/llvm_visitor.h"
+#endif
+
 namespace mar2a
 {
 
@@ -14,6 +18,9 @@ public:
   IRNode(std::string name);
   virtual ~IRNode() = default;
   virtual void pretty_print(std::ostream& out, const std::string& indent) const = 0;
+#ifdef MAR2A_USE_LLVM
+  virtual void visit(LLVMVisitor* visitor) = 0;
+#endif
 protected:
   const std::string& name() const;
 private:

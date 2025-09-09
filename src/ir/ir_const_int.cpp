@@ -15,4 +15,13 @@ void IRConstInt::pretty_print(std::ostream& out, const std::string& indent) cons
   out << value_;
 }
 
+#ifdef MAR2A_USE_LLVM
+
+void IRConstInt::visit(LLVMVisitor* visitor)
+{
+  visitor->create_i32();
+  visitor->create_constant_int(value_);
+}
+
+#endif
 } // namespace

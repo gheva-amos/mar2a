@@ -22,4 +22,16 @@ void IRModule::add_child(std::unique_ptr<IRNode> child)
   children_.push_back(std::move(child));
 }
 
+#ifdef MAR2A_USE_LLVM
+void IRModule::visit(LLVMVisitor* visitor)
+{
+  visitor->add_module(name());
+  for (const auto& child : children_)
+  {
+    child->visit(visitor);
+  }
+}
+
+#endif
+
 } // namespace

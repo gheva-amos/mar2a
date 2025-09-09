@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
+if (MAR2A_USE_LLVM)
+  add_subdirectory(llvm)
+  add_definitions(-DMAR2A_USE_LLVM)
+endif()
+
 add_subdirectory(lexer)
 add_subdirectory(ast)
 add_subdirectory(ir)

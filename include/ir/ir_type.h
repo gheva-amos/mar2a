@@ -22,6 +22,10 @@ public:
   static IRType Void();
   static IRType Unknown();
   static IRType factory(ASTType::Type type);
+
+#ifdef MAR2A_USE_LLVM
+  virtual void visit(LLVMVisitor* visitor) override;
+#endif
 private:
   IRType(Type type);
   Type type_;

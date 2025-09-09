@@ -70,4 +70,19 @@ void IRType::pretty_print(std::ostream& out, const std::string& indent) const
   }
 }
 
+#ifdef MAR2A_USE_LLVM
+
+void IRType::visit(LLVMVisitor* visitor)
+{
+  switch (type_)
+  {
+  case Type::type_int:
+    visitor->create_i32();
+    break;
+  default:
+    visitor->create_void();
+  }
+}
+
+#endif
 } // namespace

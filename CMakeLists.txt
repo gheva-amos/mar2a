@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
 
-#yum install -y cmake gdb
+#yum install -y cmake gdb llvm llvm-devel clang clang-devel lld lld-devel zlib-devel libxml2-devel ncurses-devel
 
 include_directories(include)
 
@@ -18,6 +18,8 @@ FetchContent_Declare(
     )
 
 FetchContent_MakeAvailable(googletest)
+
+option(MAR2A_USE_LLVM "Enable LLVM backend" ON)
 
 add_subdirectory(src)
 add_subdirectory(experiments)

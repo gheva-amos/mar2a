@@ -20,4 +20,14 @@ void IRReturn::add_value(std::unique_ptr<IRNode> child)
   value_ = std::move(child);
 }
 
+#ifdef MAR2A_USE_LLVM
+
+void IRReturn::visit(LLVMVisitor* visitor)
+{
+  value_->visit(visitor);
+  visitor->create_return();
+}
+
+#endif
+
 } // namespace

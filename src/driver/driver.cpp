@@ -1,6 +1,9 @@
 #include "driver/driver.h"
 #include "parser/parser.h"
 #include "lexer/lexer.h"
+#ifdef MAR2A_USE_LLVM
+#include "llvm/llvm_visitor.h"
+#endif
 
 namespace mar2a
 {
@@ -40,6 +43,16 @@ bool Driver::run(std::ostream& out)
   }
   ir->pretty_print(out, "");
 
+  if (codegen_only_)
+  {
+    return true;
+  }
+#ifdef MAR2A_USE_LLVM
+  std::unique_ptr<LLVMVisitor> llvm{std::make_unique<LLVMVisitor>()};
+  ir->visit(llvm.get());
+  llvm->print();
+  llvm->run();
+#endif
   return true;
 }
 
