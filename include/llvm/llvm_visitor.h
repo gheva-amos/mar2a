@@ -21,6 +21,8 @@ public:
   void create_function(const std::string& name);
   void create_constant_int(int val);
   void create_return();
+  void create_negative();
+  void create_complement();
   void print();
   std::optional<int> run();
 private:
@@ -28,10 +30,10 @@ private:
   std::vector<std::unique_ptr<llvm::Module>> modules_;
   llvm::IRBuilder<> builder_;
   llvm::Module* current_module_;
-  llvm::Function* current_function_;
-  llvm::BasicBlock* current_block_;
-  llvm::Type* current_type_;
-  llvm::Value* current_value_;
+  std::vector<llvm::Function*> current_function_;
+  std::vector<llvm::BasicBlock*> current_block_;
+  std::vector<llvm::Type*> current_type_;
+  std::vector<llvm::Value*> current_value_;
 };
 
 } // namespace
