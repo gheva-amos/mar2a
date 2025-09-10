@@ -12,13 +12,22 @@ namespace mar2a
 class Lexer
 {
 public:
+  struct Lexeme
+  {
+    std::string value;
+    size_t line;
+    size_t column;
+    bool number{false};
+    bool string{false};
+  };
   Lexer(std::string src);
   bool tokenize();
   Token* at(size_t idx) const;
   size_t size() const;
 private:
   bool skip_white();
-  std::string token();
+  Lexeme lexeme();
+  std::vector<Lexeme> split();
   char next_char();
   void push_last_char();
   std::string get_string();
@@ -29,6 +38,7 @@ private:
   size_t current_{0};
   static std::string enders;
   std::vector<std::unique_ptr<Token>> tokens_;
+  std::vector<std::unique_ptr<Token>> token_stack_;
 };
 
 } // namespace

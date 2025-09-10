@@ -47,3 +47,13 @@ TEST(NumberTokening, LexerTests)
   EXPECT_TRUE(lexer.tokenize());
   EXPECT_EQ(lexer.at(0)->value(), "1234.56");
 }
+
+TEST(DecrementAndMinus, LexerTests)
+{
+  Lexer lexer{"-234 --"};
+  EXPECT_TRUE(lexer.tokenize());
+  EXPECT_EQ(lexer.at(0)->type(), Token::Type::minus);
+  EXPECT_EQ(lexer.at(1)->type(), Token::Type::number);
+  EXPECT_EQ(lexer.at(2)->type(), Token::Type::decrement);
+}
+
