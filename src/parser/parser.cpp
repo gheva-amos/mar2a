@@ -138,14 +138,12 @@ bool Parser::parse_return(size_t index)
     return false;
   }
   index += 1;
-  token = lexer_->at(index);
-  if (!expect(token, {Token::Type::string, Token::Type::number}, "An expression"))
+  if (!parse_expression(index))
   {
     return false;
   }
-  nodes_.back()->add_child(std::make_unique<ASTExpression>(token->value(), ASTExpression::Type::const_int));
 
-  index += 1;
+  index = index_;
   token = lexer_->at(index);
   if (!expect_semicolon(token))
   {
@@ -156,6 +154,49 @@ bool Parser::parse_return(size_t index)
   return true;
 }
 
+bool Parser::parse_expression(size_t index)
+{
+  // constant int, parenthesis then expresion then parenthesis, unary then expression
+  static std::vector<Token::Type> unariy_types(
+    {Token::Type::tilde, Token::Type::decrement, Token::Type::minus}
+    );
+  bool ret{false};
+  if (lexer_->at(index)->type() == Token::Type::open_paren)
+  {
+    ret = parse_expression(index + 1);
+    index = index_;
+    expect_close_paren(lexer_->at(index));
+    index += 1;
+  }
+  else if (std::find(unariy_types.begin(), unariy_types.end(), lexer_->at(index)->type()) != unariy_types.end())
+  {
+    ASTExpression::Type type{ASTExpression::Type::tilde};
+    if (lexer_->at(index)->type() == Token::Type::minus)
+    {
+      type = ASTExpression::Type::minus;
+    }
+    else if (lexer_->at(index)->type() == Token::Type::decrement)
+    {
+      type = ASTExpression::Type::decrement;
+    }
+    std::unique_ptr<ASTExpression> exp{std::make_unique<ASTExpression>(lexer_->at(index)->value(), type)};
+    auto rp{exp.get()};
+    nodes_.back()->add_child(std::move(exp));
+    nodes_.push_back(rp);
+    index += 1;
+    ret = parse_expression(index);
+    index = index_;
+    nodes_.pop_back();
+  }
+  else // constant int
+  {
+    nodes_.back()->add_child(std::make_unique<ASTExpression>(lexer_->at(index)->value(), ASTExpression::Type::const_int));
+    index += 1;
+    ret = true;
+  }
+  index_ = index;
+  return ret;
+}
 
 bool Parser::expect_open_paren(Token* token)
 {

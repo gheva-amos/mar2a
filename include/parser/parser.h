@@ -24,6 +24,7 @@ private:
   bool parse_program(size_t index);
   bool parse_function(size_t index);
   bool parse_statement(size_t index);
+  bool parse_expression(size_t index);
   bool parse_return(size_t index);
   std::unique_ptr<Lexer> lexer_;
   std::unique_ptr<ASTNode> ast_;
