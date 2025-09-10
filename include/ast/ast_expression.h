@@ -12,7 +12,10 @@ class ASTExpression : public ASTNode
 public:
   enum class Type
   {
-    const_int
+    const_int,
+    minus,
+    decrement,
+    tilde,
   };
   ASTExpression(const std::string exp, Type type);
   virtual void add_child(std::unique_ptr<ASTNode> child) override;
@@ -20,6 +23,7 @@ public:
   virtual std::unique_ptr<IRNode> visit() override;
 private:
   const std::string exp_;
+  std::unique_ptr<ASTNode> child_;
   Type type_;
 };
 
