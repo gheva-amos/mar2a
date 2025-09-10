@@ -59,6 +59,8 @@ std::unique_ptr<Token> Token::factory(size_t line, size_t col, const std::string
     case '8':
     case '9':
       return std::make_unique<Number>(line, col, value);
+    case '~':
+      return std::make_unique<Tilde>(line, col, value);
     default:
       return std::make_unique<Identifier>(line, col, value);
     }
@@ -130,6 +132,24 @@ String::String(size_t line, size_t col, std::string value) :
   Token{line, col, value}
 {
   type_ = Type::string;
+}
+
+Minus::Minus(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::minus;
+}
+
+Decrement::Decrement(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::decrement;
+}
+
+Tilde::Tilde(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::tilde;
 }
 
 } // namespace

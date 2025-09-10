@@ -5,7 +5,7 @@
 namespace mar2a
 {
 
-std::string Lexer::enders{"();{}\"'=<>!+-*/."};
+std::string Lexer::enders{"();{}\"'=<>!+-*/~."};
 
 Lexer::Lexer(std::string src) :
   src_{std::move(src)}
@@ -14,17 +14,17 @@ Lexer::Lexer(std::string src) :
 
 bool Lexer::tokenize()
 {
-  line_ = 0;
-  column_ = 0;
-  current_ = 0;
-  if (!skip_white())
+  std::vector<Lexeme> lexemes = split();
+  if (lexemes.empty())
   {
     return false;
   }
-
-  while (current_ < src_.size())
+  size_t idx{0};
+  while (idx < lexemes.size())
   {
-    std::string t{token()};
+    Lexeme l{lexemes[idx]};
+
+    std::string& t{l.value};
     if (t.empty())
     {
       break;
@@ -37,16 +37,28 @@ bool Lexer::tokenize()
     {
       tokens_.emplace_back(std::make_unique<Number>(line_, column_, get_number(t)));
     }
+    else if (t[0] == '-')
+    {
+      if (lexemes[idx + 1].value == "-")
+      {
+        tokens_.emplace_back(std::make_unique<Decrement>(l.line, l.column, "--"));
+        idx += 1;
+      }
+      else
+      {
+        tokens_.emplace_back(std::make_unique<Minus>(l.line, l.column, "-"));
+      }
+    }
     else
     {
-      auto token{Token::factory(line_, column_, t)};
+      auto token{Token::factory(l.line, l.column, t)};
       if (token == nullptr)
       {
         return false;
       }
       tokens_.emplace_back(std::move(token));
     }
-    skip_white();
+    idx += 1;
   }
   return !tokens_.empty();
 }
@@ -72,7 +84,7 @@ bool Lexer::skip_white()
   return current_ < src_.size();
 }
 
-std::string Lexer::token()
+Lexer::Lexeme Lexer::lexeme()
 {
   size_t length{0};
   size_t iter{current_};
@@ -86,7 +98,7 @@ std::string Lexer::token()
     length = 1;
   }
   column_ += length;
-  std::string ret{src_.substr(current_, length)};
+  Lexeme ret {src_.substr(current_, length), line_, column_};
   current_ += length;
   return ret;
 }
@@ -159,6 +171,36 @@ std::string Lexer::get_number(std::string ft)
   } while (std::isdigit(c));
   push_last_char();
   return ss.str();
+}
+
+std::vector<Lexer::Lexeme> Lexer::split()
+{
+  line_ = 0;
+  column_ = 0;
+  current_ = 0;
+  skip_white();
+  std::vector<Lexeme> ret;
+  while (current_ < src_.size())
+  {
+    auto l{lexeme()};
+    if (l.value.empty())
+    {
+      break;
+    }
+    if (l.value == "\"")
+    {
+      l.value = get_string();
+      l.string = true;
+    }
+    else if (std::isdigit(l.value[0]))
+    {
+      l.value =  get_number(l.value);
+      l.number = true;
+    }
+    ret.push_back(l);
+    skip_white();
+  }
+  return ret;
 }
 
 } // namespace

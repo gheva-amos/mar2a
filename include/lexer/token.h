@@ -24,6 +24,9 @@ public:
     intt,
     voidt,
     string,
+    minus,
+    decrement,
+    tilde,
     unknown
   };
   Token(size_t line, size_t col, std::string value);
@@ -95,6 +98,24 @@ class String : public Token
 {
 public:
   String(size_t line, size_t col, std::string value);
+};
+
+class Minus : public Token
+{
+public:
+  Minus(size_t line, size_t col, std::string value);
+};
+
+class Decrement : public Token
+{
+public:
+  Decrement(size_t line, size_t col, std::string value);
+};
+
+class Tilde : public Token
+{
+public:
+  Tilde(size_t line, size_t col, std::string value);
 };
 
 } // namespace
