@@ -24,10 +24,22 @@ public:
     intt,
     voidt,
     string,
-    minus,
+    negate,
     decrement,
+    increment,
     tilde,
+    plus,
+    times,
+    divide,
+    remainder,
     unknown
+  };
+  enum class Precedence
+  {
+    min_precedence,
+    plus_minus,
+    times_devide_remainder,
+    na,
   };
   Token(size_t line, size_t col, std::string value);
   virtual ~Token() = default;
@@ -35,10 +47,13 @@ public:
   size_t column() const;
   const std::string& value() const;
   Type type() const;
+  Precedence precedence() const;
+  static Precedence next_precedence(Precedence p);
 
   static std::unique_ptr<Token> factory(size_t line, size_t col, const std::string& value);
 protected:
   Type type_;
+  Precedence precedence_;
 private:
   size_t line_;
   size_t column_;
@@ -100,10 +115,10 @@ public:
   String(size_t line, size_t col, std::string value);
 };
 
-class Minus : public Token
+class Negate : public Token
 {
 public:
-  Minus(size_t line, size_t col, std::string value);
+  Negate(size_t line, size_t col, std::string value);
 };
 
 class Decrement : public Token
@@ -116,6 +131,36 @@ class Tilde : public Token
 {
 public:
   Tilde(size_t line, size_t col, std::string value);
+};
+
+class Increment : public Token
+{
+public:
+  Increment(size_t line, size_t col, std::string value);
+};
+
+class Plus : public Token
+{
+public:
+  Plus(size_t line, size_t col, std::string value);
+};
+
+class Mul : public Token
+{
+public:
+  Mul(size_t line, size_t col, std::string value);
+};
+
+class Divide : public Token
+{
+public:
+  Divide(size_t line, size_t col, std::string value);
+};
+
+class Remainder : public Token
+{
+public:
+  Remainder(size_t line, size_t col, std::string value);
 };
 
 } // namespace

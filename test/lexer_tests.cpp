@@ -52,8 +52,19 @@ TEST(DecrementAndMinus, LexerTests)
 {
   Lexer lexer{"-234 --"};
   EXPECT_TRUE(lexer.tokenize());
-  EXPECT_EQ(lexer.at(0)->type(), Token::Type::minus);
+  EXPECT_EQ(lexer.at(0)->type(), Token::Type::negate);
   EXPECT_EQ(lexer.at(1)->type(), Token::Type::number);
   EXPECT_EQ(lexer.at(2)->type(), Token::Type::decrement);
 }
 
+TEST(MathOps, LexerTests)
+{
+  Lexer lexer{"-3 * 4 + 2"};
+  EXPECT_TRUE(lexer.tokenize());
+  EXPECT_EQ(lexer.at(0)->type(), Token::Type::negate);
+  EXPECT_EQ(lexer.at(1)->type(), Token::Type::number);
+  EXPECT_EQ(lexer.at(2)->type(), Token::Type::times);
+  EXPECT_EQ(lexer.at(3)->type(), Token::Type::number);
+  EXPECT_EQ(lexer.at(4)->type(), Token::Type::plus);
+  EXPECT_EQ(lexer.at(5)->type(), Token::Type::number);
+}

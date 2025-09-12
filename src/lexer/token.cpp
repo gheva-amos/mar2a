@@ -8,7 +8,7 @@ std::vector<std::string> Token::keywords{
 };
 
 Token::Token(size_t line, size_t col, std::string value) :
-  line_{line}, column_{col}, value_{std::move(value)}
+  precedence_{Precedence::na}, line_{line}, column_{col}, value_{std::move(value)}
 {
 }
 
@@ -30,6 +30,26 @@ const std::string& Token::value() const
 Token::Type Token::type() const
 {
   return type_;
+}
+
+Token::Precedence Token::precedence() const
+{
+  return precedence_;
+}
+
+Token::Precedence Token::next_precedence(Precedence p)
+{
+  switch (p)
+  {
+  case Precedence::min_precedence:
+    return Precedence::plus_minus;
+  case Precedence::plus_minus:
+    return Precedence::times_devide_remainder;
+  case Precedence::times_devide_remainder:
+  case Precedence::na:
+    return Precedence::na;
+  }
+  return Precedence::na;
 }
 
 std::unique_ptr<Token> Token::factory(size_t line, size_t col, const std::string& value)
@@ -61,6 +81,12 @@ std::unique_ptr<Token> Token::factory(size_t line, size_t col, const std::string
       return std::make_unique<Number>(line, col, value);
     case '~':
       return std::make_unique<Tilde>(line, col, value);
+    case '*':
+      return std::make_unique<Mul>(line, col, value);
+    case '/':
+      return std::make_unique<Divide>(line, col, value);
+    case '%':
+      return std::make_unique<Remainder>(line, col, value);
     default:
       return std::make_unique<Identifier>(line, col, value);
     }
@@ -134,10 +160,11 @@ String::String(size_t line, size_t col, std::string value) :
   type_ = Type::string;
 }
 
-Minus::Minus(size_t line, size_t col, std::string value) :
+Negate::Negate(size_t line, size_t col, std::string value) :
   Token{line, col, value}
 {
-  type_ = Type::minus;
+  type_ = Type::negate;
+  precedence_ = Precedence::plus_minus;
 }
 
 Decrement::Decrement(size_t line, size_t col, std::string value) :
@@ -150,6 +177,40 @@ Tilde::Tilde(size_t line, size_t col, std::string value) :
   Token{line, col, value}
 {
   type_ = Type::tilde;
+}
+
+Increment::Increment(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::increment;
+}
+
+Plus::Plus(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::plus;
+  precedence_ = Precedence::plus_minus;
+}
+
+Mul::Mul(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::times;
+  precedence_ = Precedence::times_devide_remainder;
+}
+
+Divide::Divide(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::divide;
+  precedence_ = Precedence::times_devide_remainder;
+}
+
+Remainder::Remainder(size_t line, size_t col, std::string value) :
+  Token{line, col, value}
+{
+  type_ = Type::remainder;
+  precedence_ = Precedence::times_devide_remainder;
 }
 
 } // namespace

@@ -46,7 +46,19 @@ bool Lexer::tokenize()
       }
       else
       {
-        tokens_.emplace_back(std::make_unique<Minus>(l.line, l.column, "-"));
+        tokens_.emplace_back(std::make_unique<Negate>(l.line, l.column, "-"));
+      }
+    }
+    else if (t[0] == '+')
+    {
+      if (lexemes[idx + 1].value == "+")
+      {
+        tokens_.emplace_back(std::make_unique<Increment>(l.line, l.column, "++"));
+        idx += 1;
+      }
+      else
+      {
+        tokens_.emplace_back(std::make_unique<Plus>(l.line, l.column, "+"));
       }
     }
     else
