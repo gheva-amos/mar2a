@@ -4,6 +4,7 @@
 #include "ast/ast_identifier.h"
 #include "ast/ast_return.h"
 #include "ast/ast_expression.h"
+#include "ast/ast_factor.h"
 #include "ast/ast_type.h"
 #include "lexer/token.h"
 
@@ -11,7 +12,7 @@ namespace mar2a
 {
 
 Parser::Parser(std::unique_ptr<Lexer> lexer, std::ostream& out) :
-  lexer_{std::move(lexer)}, ast_{std::make_unique<ASTProgram>()}, out_{out}, index_{0}
+  lexer_{std::move(lexer)}, ast_{std::make_unique<ASTProgram>()},  out_{out}, index_{0}, left_{nullptr}
 {
   nodes_.push_back(ast_.get());
 }
@@ -142,6 +143,7 @@ bool Parser::parse_return(size_t index)
   {
     return false;
   }
+  left_ = nullptr;
 
   index = index_;
   token = lexer_->at(index);
@@ -154,11 +156,49 @@ bool Parser::parse_return(size_t index)
   return true;
 }
 
-bool Parser::parse_expression(size_t index)
+bool Parser::parse_expression(size_t index, Token::Precedence min_prec)
+{
+  static std::vector<Token::Type> binary_ops(
+      {Token::Type::plus, Token::Type::negate, Token::Type::times,
+        Token::Type::divide, Token::Type::remainder}
+      );
+  // Take care of the left side
+  if (!parse_factor(index))
+  {
+    return false;
+  }
+  index = index_;
+  while (std::find(binary_ops.begin(), binary_ops.end(), lexer_->at(index)->type()) != binary_ops.end()
+        && lexer_->at(index)->precedence() >= min_prec)
+  {
+    std::unique_ptr<ASTExpression> exp{ASTExpression::factory(lexer_->at(index)->value(), lexer_->at(index)->type())};
+    if (left_ != nullptr)
+    {
+      exp->add_child(std::move(left_));
+    }
+    left_ = std::move(exp);
+    index += 1;
+    if (!parse_expression(index, Token::next_precedence(min_prec)))
+    {
+      return false;
+    }
+    index = index_;
+  }
+  // TODO
+  if (left_ != nullptr)
+  {
+    auto rp{left_.get()};
+    nodes_.back()->add_child(std::move(left_));
+    nodes_.push_back(rp);
+  }
+  return true;
+}
+
+bool Parser::parse_factor(size_t index)
 {
   // constant int, parenthesis then expresion then parenthesis, unary then expression
   static std::vector<Token::Type> unariy_types(
-    {Token::Type::tilde, Token::Type::decrement, Token::Type::minus}
+    {Token::Type::tilde, Token::Type::decrement, Token::Type::negate}
     );
   bool ret{false};
   if (lexer_->at(index)->type() == Token::Type::open_paren)
@@ -166,31 +206,44 @@ bool Parser::parse_expression(size_t index)
     ret = parse_expression(index + 1);
     index = index_;
     expect_close_paren(lexer_->at(index));
+    out_ << __LINE__ << left_ <<std::endl;
     index += 1;
   }
   else if (std::find(unariy_types.begin(), unariy_types.end(), lexer_->at(index)->type()) != unariy_types.end())
   {
-    ASTExpression::Type type{ASTExpression::Type::tilde};
-    if (lexer_->at(index)->type() == Token::Type::minus)
+    ASTFactor::Type type{ASTFactor::Type::tilde};
+    if (lexer_->at(index)->type() == Token::Type::negate)
     {
-      type = ASTExpression::Type::minus;
+      type = ASTFactor::Type::minus;
     }
     else if (lexer_->at(index)->type() == Token::Type::decrement)
     {
-      type = ASTExpression::Type::decrement;
+      type = ASTFactor::Type::decrement;
     }
-    std::unique_ptr<ASTExpression> exp{std::make_unique<ASTExpression>(lexer_->at(index)->value(), type)};
-    auto rp{exp.get()};
-    nodes_.back()->add_child(std::move(exp));
-    nodes_.push_back(rp);
+    std::unique_ptr<ASTFactor> exp{std::make_unique<ASTFactor>(lexer_->at(index)->value(), type)};
+    if (left_ == nullptr)
+    {
+      left_ = std::move(exp);
+    }
+    else
+    {
+      left_->add_child(std::move(exp));
+    }
     index += 1;
-    ret = parse_expression(index);
+    ret = parse_factor(index);
     index = index_;
-    nodes_.pop_back();
   }
   else // constant int
   {
-    nodes_.back()->add_child(std::make_unique<ASTExpression>(lexer_->at(index)->value(), ASTExpression::Type::const_int));
+    std::unique_ptr<ASTFactor> exp{std::make_unique<ASTFactor>(lexer_->at(index)->value(), ASTFactor::Type::const_int)};
+    if (left_ == nullptr)
+    {
+      left_ = std::move(exp);
+    }
+    else
+    {
+      left_->add_child(std::move(exp));
+    }
     index += 1;
     ret = true;
   }
