@@ -84,6 +84,51 @@ void LLVMVisitor::create_complement()
   }
 }
 
+void LLVMVisitor::create_add()
+{
+  auto rhs = current_value_.back();
+  current_value_.pop_back();
+  auto lhs = current_value_.back();
+  current_value_.pop_back();
+  current_value_.push_back(builder_.CreateAdd(lhs, rhs, "Addition"));
+}
+
+void LLVMVisitor::create_subtract()
+{
+  auto rhs = current_value_.back();
+  current_value_.pop_back();
+  auto lhs = current_value_.back();
+  current_value_.pop_back();
+  current_value_.push_back(builder_.CreateSub(lhs, rhs, "Subtraction"));
+}
+
+void LLVMVisitor::create_multiplication()
+{
+  auto rhs = current_value_.back();
+  current_value_.pop_back();
+  auto lhs = current_value_.back();
+  current_value_.pop_back();
+  current_value_.push_back(builder_.CreateMul(lhs, rhs, "Multiplication"));
+}
+
+void LLVMVisitor::create_division()
+{
+  auto rhs = current_value_.back();
+  current_value_.pop_back();
+  auto lhs = current_value_.back();
+  current_value_.pop_back();
+  current_value_.push_back(builder_.CreateSDiv(lhs, rhs, "Signed division"));
+}
+
+void LLVMVisitor::create_remainder()
+{
+  auto rhs = current_value_.back();
+  current_value_.pop_back();
+  auto lhs = current_value_.back();
+  current_value_.pop_back();
+  current_value_.push_back(builder_.CreateSRem(lhs, rhs, "Signed remainder"));
+}
+
 void LLVMVisitor::print()
 {
   modules_.back()->print(llvm::outs(), nullptr);

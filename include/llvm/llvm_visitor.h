@@ -23,6 +23,11 @@ public:
   void create_return();
   void create_negative();
   void create_complement();
+  void create_add();
+  void create_subtract();
+  void create_multiplication();
+  void create_division();
+  void create_remainder();
   void print();
   std::optional<int> run();
 private:

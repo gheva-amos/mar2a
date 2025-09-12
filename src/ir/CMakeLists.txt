@@ -9,6 +9,7 @@ add_library(ir
     ir_const_int.cpp
     ir_return.cpp
     ir_unary_op.cpp
+    ir_binary_op.cpp
     )
 target_compile_options(ir PRIVATE -Wall -Wextra -pedantic -Wno-enum-compare -Wno-maybe-uninitialized -Wno-uninitialized -Wno-unused-parameter)
 
