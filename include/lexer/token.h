@@ -36,10 +36,10 @@ public:
   };
   enum class Precedence
   {
-    min_precedence,
-    plus_minus,
-    times_devide_remainder,
-    na,
+    min_precedence = 0,
+    plus_minus = 50,
+    times_devide_remainder = 100,
+    na = 1000,
   };
   Token(size_t line, size_t col, std::string value);
   virtual ~Token() = default;
