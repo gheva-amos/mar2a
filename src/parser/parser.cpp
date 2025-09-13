@@ -229,16 +229,13 @@ bool Parser::parse_factor(size_t index)
       type = ASTFactor::Type::decrement;
     }
     std::unique_ptr<ASTFactor> exp{std::make_unique<ASTFactor>(lexer_->at(index)->value(), type)};
-    if (left_ == nullptr)
-    {
-      left_ = std::move(exp);
-    }
-    else
-    {
-      left_->add_child(std::move(exp));
-    }
     index += 1;
-    ret = parse_factor(index);
+    ret = parse_expression(index);
+    if (left_ != nullptr)
+    {
+      exp->add_child(std::move(left_));
+    }
+    left_ = std::move(exp);
     index = index_;
   }
   else // constant int
