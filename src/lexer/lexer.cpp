@@ -5,7 +5,7 @@
 namespace mar2a
 {
 
-std::string Lexer::enders{"();{}\"'=<>!+-*/~."};
+std::string Lexer::enders{"();{}\"'%=<>!+-*/~."};
 
 Lexer::Lexer(std::string src) :
   src_{std::move(src)}
