@@ -143,7 +143,7 @@ bool Parser::parse_return(size_t index)
   {
     return false;
   }
-  left_ = nullptr;
+  store_left();
 
   index = index_;
   token = lexer_->at(index);
@@ -154,6 +154,17 @@ bool Parser::parse_return(size_t index)
   nodes_.pop_back();
   index_ = index;
   return true;
+}
+
+void Parser::store_left()
+{
+  if (left_ != nullptr)
+  {
+    auto lp{left_.get()};
+    nodes_.back()->add_child(std::move(left_));
+    nodes_.push_back(lp);
+    left_ = nullptr;
+  }
 }
 
 bool Parser::parse_expression(size_t index, Token::Precedence min_prec)
@@ -176,20 +187,18 @@ bool Parser::parse_expression(size_t index, Token::Precedence min_prec)
     {
       exp->add_child(std::move(left_));
     }
-    left_ = std::move(exp);
+    left_ = nullptr;
     index += 1;
     if (!parse_expression(index, Token::next_precedence(min_prec)))
     {
       return false;
     }
+    if (left_ != nullptr)
+    {
+      exp->add_child(std::move(left_));
+    }
+    left_ = std::move(exp);
     index = index_;
-  }
-  // TODO
-  if (left_ != nullptr)
-  {
-    auto rp{left_.get()};
-    nodes_.back()->add_child(std::move(left_));
-    nodes_.push_back(rp);
   }
   return true;
 }
@@ -206,7 +215,6 @@ bool Parser::parse_factor(size_t index)
     ret = parse_expression(index + 1);
     index = index_;
     expect_close_paren(lexer_->at(index));
-    out_ << __LINE__ << left_ <<std::endl;
     index += 1;
   }
   else if (std::find(unariy_types.begin(), unariy_types.end(), lexer_->at(index)->type()) != unariy_types.end())

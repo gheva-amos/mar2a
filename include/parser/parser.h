@@ -24,9 +24,10 @@ private:
   bool parse_program(size_t index);
   bool parse_function(size_t index);
   bool parse_statement(size_t index);
-  bool parse_expression(size_t index, Token::Precedence min_prec = Token::Precedence::min_precedence);
+  bool parse_expression(size_t index, Token::Precedence min_prec = Token::Precedence::plus_minus);
   bool parse_factor(size_t index);
   bool parse_return(size_t index);
+  void store_left();
   std::unique_ptr<Lexer> lexer_;
   std::unique_ptr<ASTNode> ast_;
   std::ostream& out_;
