@@ -104,4 +104,9 @@ std::unique_ptr<IRNode> ASTExpression::visit()
   return nullptr;
 }
 
+ASTExpression::Type ASTExpression::type() const
+{
+  return type_;
+}
+
 } // namespace

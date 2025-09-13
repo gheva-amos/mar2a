@@ -15,6 +15,7 @@ TEST(NoWhiteSpace, LexerTests)
   EXPECT_TRUE(lexer.tokenize());
   EXPECT_EQ(lexer.at(0)->value(), "main");
   EXPECT_EQ(lexer.at(1)->value(), "(");
+  EXPECT_EQ(lexer.at(1)->type(), Token::Type::open_paren);
   EXPECT_EQ(lexer.at(2)->value(), "void");
   EXPECT_EQ(lexer.at(3)->value(), ")");
   EXPECT_EQ(lexer.at(4)->value(), "{");
@@ -67,4 +68,19 @@ TEST(MathOps, LexerTests)
   EXPECT_EQ(lexer.at(3)->type(), Token::Type::number);
   EXPECT_EQ(lexer.at(4)->type(), Token::Type::plus);
   EXPECT_EQ(lexer.at(5)->type(), Token::Type::number);
+}
+
+TEST(Parenthesis, LexerTests)
+{
+  Lexer lexer{"(3 * 4) + 2"};
+  EXPECT_TRUE(lexer.tokenize());
+  int i = 0;
+  //EXPECT_EQ(lexer.at(i++)->type(), Token::Type::negate);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::open_paren);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::number);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::times);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::number);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::close_paren);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::plus);
+  EXPECT_EQ(lexer.at(i++)->type(), Token::Type::number);
 }

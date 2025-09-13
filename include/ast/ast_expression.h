@@ -25,6 +25,7 @@ public:
   virtual void pretty_print(std::ostream& out, const std::string& indent) const override;
   virtual std::unique_ptr<IRNode> visit() override;
   static std::unique_ptr<ASTExpression> factory(std::string value, Token::Type type);
+  Type type() const;
 private:
   const std::string exp_;
   std::vector<std::unique_ptr<ASTNode>> children_;
